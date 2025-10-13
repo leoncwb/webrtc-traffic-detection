@@ -1,0 +1,18 @@
+# Dados e saídas
+data/raw/*
+data/processed/*
+!data/raw/readme.md
+!data/processed/readme.md
+
+# Cache e temporários
+__pycache__/
+*.pyc
+*.ipynb_checkpoints
+
+# Relatórios e figuras geradas
+reports/figures/*
+reports/*.pdf
+
+# Ambientes virtuais
+.venv/
+env/

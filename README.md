@@ -1,90 +1,106 @@
-# Detecção de Tráfego WebRTC em Ambientes Criptografados
+# 🛰️ WebRTC Traffic Detection
 
-Este repositório contém o código, dados e documentação do projeto desenvolvido na disciplina de Reconhecimento de Padrões, cujo objetivo é identificar fluxos de tráfego WebRTC em meio a conexões criptografadas, utilizando técnicas clássicas de aprendizado de máquina.
+[![Python](https://img.shields.io/badge/Python-3.10+-blue.svg)](https://www.python.org/)
+[![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
+[![UTFPR](https://img.shields.io/badge/UTFPR-Mestrado%20em%20Telecomunicações-yellow.svg)](#)
 
-## 1. Objetivo
+> **Detecção de tráfego WebRTC em ambientes criptografados utilizando reconhecimento de padrões.**  
+> Projeto desenvolvido por **Leonardo Rodrigues Pereira** como parte da disciplina **Reconhecimento de Padrões** do **Programa de Mestrado em Telecomunicações e Inteligência Artificial – UTFPR**.
 
-Com o avanço da criptografia em protocolos de comunicação, como HTTPS, DTLS e SRTP, tornou-se difícil distinguir aplicações de rede por meio de inspeção direta de pacotes.  
-O projeto propõe uma abordagem baseada em reconhecimento de padrões, analisando características estatísticas e temporais dos pacotes (metadados) para classificar se um fluxo pertence ou não a uma comunicação WebRTC.
+---
 
-## 2. Estrutura do Repositório
+## 🧠 Objetivo
+
+Investigar a possibilidade de **identificar fluxos WebRTC** em ambientes **totalmente criptografados** (DTLS/SRTP) a partir de **características estatísticas e temporais** dos pacotes, sem inspecionar o payload.
+
+O estudo emprega algoritmos clássicos de *machine learning* (Random Forest, SVM) e métodos não supervisionados (K-Means, Isolation Forest), avaliando sua capacidade de distinguir tráfego **VPN / non-VPN / WebRTC** com base apenas em *flow features*.
+
+---
+
+## 🗂️ Estrutura do Projeto
 
 webrtc-traffic-detection/
 ├── data/ # Dados brutos e processados
-│ ├── raw/ # Capturas originais (ex: ISCX VPN-nonVPN, pcap)
-│ ├── processed/ # Dados convertidos pelo CICFlowMeter
-│ └── readme.md
-│
-├── notebooks/ # Notebooks de análise e experimentação
+│ ├── raw/ # Arquivos .arff originais (ISCX VPN-nonVPN)
+│ └── processed/ # Dataset consolidado e normalizado
+├── scripts/ # Scripts principais do pipeline
+│ ├── convert_arff_to_csv.py
+│ ├── preprocess_dataset.py
+│ ├── train_models.py
+│ └── feature_extraction_webrtc.py
+├── notebooks/ # Notebooks exploratórios (Jupyter)
 │ ├── 01_exploracao_dataset.ipynb
 │ ├── 02_treinamento_modelos.ipynb
 │ ├── 03_visualizacao_resultados.ipynb
 │ └── 04_captura_webrtc_local.ipynb
-│
-├── scripts/ # Scripts Python reutilizáveis
-│ ├── preprocess_dataset.py
-│ ├── train_models.py
-│ └── feature_extraction_webrtc.py
-│
-├── reports/ # Resultados e figuras
-│ ├── figures/
+├── reports/
+│ ├── figures/ # Figuras de resultados (confusão, importância)
 │ └── webrtc_traffic_detection_report.pdf
-│
-├── docs/ # Documentos de apoio e proposta do projeto
-│ ├── proposal_overleaf.tex
+├── docs/
+│ ├── 01_webrtc_detection_report.tex
 │ ├── methodology_notes.md
+│ ├── proposal_overleaf.tex
 │ └── references.bib
-│
-├── requirements.txt # Dependências do projeto
-├── .gitignore
+├── requirements.txt
 └── README.md
 
 
-## 3. Metodologia
+---
 
-1. **Coleta e preparação dos dados**  
-   - Utilização do dataset público [ISCX VPN-nonVPN](https://www.unb.ca/cic/datasets/vpn.html).  
-   - Capturas complementares de tráfego WebRTC realizadas com Wireshark em chamadas via Google Meet, Jitsi e Asterisk.  
-   - Conversão de arquivos `.pcap` em `.csv` com o uso do CICFlowMeter.
+## ⚙️ Execução
 
-2. **Pré-processamento**  
-   - Limpeza de atributos ausentes e normalização z-score.  
-   - Seleção de atributos relevantes, como tamanho médio dos pacotes, duração do fluxo e tempo médio entre envios.
+### 1️⃣ Preparar ambiente
 
-3. **Modelagem e classificação**  
-   - Algoritmos utilizados: Support Vector Machine (SVM), Random Forest, K-Means e Isolation Forest.  
-   - Avaliação por meio de métricas como Acurácia, F1-Score, Matriz de Confusão e AUC-ROC.
+Crie um ambiente virtual e instale dependências:
 
-4. **Interpretação dos resultados**  
-   - Análise da importância das variáveis.  
-   - Verificação da separabilidade dos fluxos WebRTC em relação a outros protocolos criptografados.
-
-## 4. Resultados Esperados
-
-Espera-se que o modelo seja capaz de identificar fluxos WebRTC mesmo sob criptografia total, com desempenho estável e interpretável.  
-O estudo visa contribuir para pesquisas em monitoramento de rede, QoS e segurança de comunicações multimídia.
-
-## 5. Execução
-
-**Requisitos mínimos:**
-- Python 3.9 ou superior  
-- pip e virtualenv instalados  
-
-**Instalação:**
 ```bash
-git clone https://github.com/leonardorpereira/webrtc-traffic-detection.git
-cd webrtc-traffic-detection
-
 python3 -m venv .venv
 source .venv/bin/activate
-
 pip install -r requirements.txt
 
-Após a configuração, os experimentos podem ser executados a partir dos notebooks numerados em notebooks/.
+2️⃣ Converter datasets ARFF → CSV
 
-6. Referências
-Draper-Gil, G. et al. Characterization of Encrypted and VPN Traffic using Time-related Features. ICISSP, 2016.
+python3 scripts/convert_arff_to_csv.py
 
-Taylor, V.F. et al. Robust Identification of Encrypted Video Streams in the Wild. IMC, 2017.
+3️⃣ Pré-processar e normalizar dados
 
-Canadian Institute for Cybersecurity – ISCX VPN-nonVPN Dataset. https://www.unb.ca/cic/datasets/vpn.html
+python3 scripts/preprocess_dataset.py
+
+4️⃣ Treinar modelos e gerar resultados
+
+python3 scripts/train_models.py
+
+As figuras e métricas serão salvas em:
+
+reports/figures/
+
+📊 Resultados Principais
+
+| Modelo               | Métrica    | Valor |
+| -------------------- | ---------- | ----- |
+| **Random Forest**    | AUC        | 0.647 |
+| **SVM (RBF)**        | AUC        | 0.724 |
+| **K-Means**          | Silhouette | 0.729 |
+| **Isolation Forest** | Correlação | 0.021 |
+
+📈 O SVM apresentou o melhor desempenho geral (AUC = 0.724), enquanto a Random Forest destacou as features de duração, tamanho médio e intervalo entre pacotes como as mais discriminativas.
+
+🖼️ Figuras
+
+<p align="center"> <img src="reports/figures/svm_confusion_matrix.png" width="45%"> <img src="reports/figures/rf_confusion_matrix.png" width="45%"> </p> <p align="center"> <img src="reports/figures/rf_feature_importance.png" width="65%"> </p>
+
+📚 Referências
+
+Draper-Gil, G., Lashkari, A. H., Mamun, M. S. I., & Ghorbani, A. A. (2016).
+Characterization of Encrypted and VPN Traffic using Time-related Features. ICISSP 2016.
+
+Taylor, V. F., Spolaor, R., Conti, M., & Martinovic, I. (2017).
+Robust Identification of Encrypted Video Streams in the Wild. ACM IMC 2017.
+
+University of New Brunswick – Canadian Institute for Cybersecurity (CIC).
+ISCX VPN-nonVPN Dataset. Disponível em: https://www.unb.ca/cic/datasets/vpn.html
+
+📜 Licença
+
+Distribuído sob a licença MIT. Consulte o arquivo LICENSE
+ para mais detalhes.
